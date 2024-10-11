@@ -1,43 +1,74 @@
 #include <iostream>
-#define DYNAMIC_MEMORY 0
-#define N 17
+#include <string>
 
-void fillArray(int* arr) {
-    for (int i = 0; i < N; i++) {
-        arr[i] = i * i;
-        std::cout << arr[i] << '\n';
+struct Author {
+    std::string firstName;
+    std::string lastName;
+};
+
+struct Book {
+    std::string title;
+    Author author;
+    int yearOfPublication;
+    int numberOfPages;
+
+    Book() : title("Неизвестно"), yearOfPublication(0), numberOfPages(0) {
+        author.firstName = "Неизвестно";
+        author.lastName = "Неизвестно";
     }
-}
 
-
-void fillArray(double* arr) {
-    for (int i = 0; i < N; i++) {
-        arr[i] = i * i;
-        std::cout << arr[i] << '\n';
+    void displayBook() const {
+        std::cout << "Название книги: " << title << std::endl;
+        std::cout << "Автор: " << author.firstName << " " << author.lastName << std::endl;
+        std::cout << "Год издания: " << yearOfPublication << std::endl;
+        std::cout << "Количество страниц: " << numberOfPages << std::endl;
+        std::cout << std::endl;
     }
-}
+};
 
+Book createBook() {
+    Book book;
 
-void fillArrayHalf(double* arr) {
-    for (int i = 0; i < N; i++) {
-        arr[i] = (double)i * i / 2;
-        std::cout << arr[i] << '\n';
-    }
+    std::cout << "Введите название книги: ";
+    std::cin.ignore();
+    std::getline(std::cin, book.title);
+
+    std::cout << "Введите имя автора: ";
+    std::getline(std::cin, book.author.firstName);
+
+    std::cout << "Введите фамилию автора: ";
+    std::getline(std::cin, book.author.lastName);
+
+    std::cout << "Введите год издания: ";
+    std::cin >> book.yearOfPublication;
+
+    std::cout << "Введите количество страниц: ";
+    std::cin >> book.numberOfPages;
+
+    return book;
 }
 
 int main() {
-    #if DYNAMIC_MEMORY == 1
+    const int numberOfBooks = 3;
+    Book books[numberOfBooks];
 
-        int* numbers = new int[N];
-        fillArray(numbers);
-        delete[] numbers;
-    #else
+    for (int i = 0; i < numberOfBooks; ++i) {
+        std::cout << "Хотите ввести данные для книги " << i + 1 << "? (y/n): ";
+        char answer;
+        std::cin >> answer;
 
-        double massiv[N];
-        double* mas = massiv;
-        fillArray(mas);
-        fillArrayHalf(mas);
-    #endif
+        if (answer == 'y' || answer == 'Y') {
+            books[i] = createBook();
+        } else {
+
+            books[i] = Book();
+        }
+    }
+
+    for (int i = 0; i < numberOfBooks; ++i) {
+        std::cout << "Информация о книге " << i + 1 << ":" << std::endl;
+        books[i].displayBook();
+    }
 
     return 0;
 }
