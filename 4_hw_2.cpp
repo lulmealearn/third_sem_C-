@@ -1,105 +1,102 @@
+// Включаем стандартный заголовочный файл для ввода/вывода
 #include <iostream>
+
+// Определение константы N, которая представляет размер массива
 #define N 128
 
-void get (int n, int *m)
-{
-    int flag;
-    for(int i = 0; i<N; i++)
-    {
-        if(m[i]==n)
-        {
-            std::cout<<"found";
+// Функция для поиска целочисленного значения в массиве
+void get(int n, int *m) {
+    int flag = 0; // Флаг для указания наличия или отсутствия значения в массиве
+    for (int i = 0; i < N; i++) {
+        if (m[i] == n) {
+            std::cout << "found"; // Выводим сообщение "found" если значение найдено
             flag = 1;
         }
     }
-    if(flag != 1)
-    {
-        std::cout<<"not found";
+    if (flag != 1) {
+        std::cout << "not found"; // Выводим сообщение "not found" если значение не найдено
     }
 }
 
-void get (float n, float *m)
-{
-    int flag;
-    for(int i = 0; i<N; i++)
-    {
-        if(m[i]==n)
-        {
-            std::cout<<"found";
+// Функция для поиска вещественного значения в массиве
+void get(float n, float *m) {
+    int flag = 0; // Флаг для указания наличия или отсутствия значения в массиве
+    for (int i = 0; i < N; i++) {
+        if (m[i] == n) {
+            std::cout << "found"; // Выводим сообщение "found" если значение найдено
             flag = 1;
         }
     }
-    if(flag != 1)
-    {
-        std::cout<<"not found";
+    if (flag != 1) {
+        std::cout << "not found"; // Выводим сообщение "not found" если значение не найдено
     }
 }
 
-void get (char n, char *m)
-{
-    int flag;
-    for(int i = 0; i<N; i++)
-    {
-        if(m[i]==n)
-        {
-            std::cout<<"found";
+// Функция для поиска символьного значения в массиве
+void get(char n, char *m) {
+    int flag = 0; // Флаг для указания наличия или отсутствия значения в массиве
+    for (int i = 0; i < N; i++) {
+        if (m[i] == n) {
+            std::cout << "found"; // Выводим сообщение "found" если значение найдено
             flag = 1;
         }
     }
-    if(flag != 1)
-    {
-        std::cout<<"not found";
+    if (flag != 1) {
+        std::cout << "not found"; // Выводим сообщение "not found" если значение не найдено
     }
 }
 
-main()
-{   
-    std::cout<<"Write type of data"<<'\n';
+int main() {
+    // Выводим запрос на ввод типа данных
+    std::cout << "Write type of data" << '\n';
+    
+    // Читаем тип данных из стандартного ввода
     std::string str;
-    std::cin>>str;
-    std::cout<<"Write "<<N<<" elemnets of massive"<<'\n';
-    // поиск в массиве int
-    if (str == "int")
-    {  
-        int mas[N];
-        for (int i = 0; i<N;i++)
-        {
-            std::cin>>mas[i];
+    std::cin >> str;
+
+    // Выводим запрос на ввод элементов массива
+    std::cout << "Write " << N << " elements of massive" << '\n';
+
+    // Обработка ввода и поиска для целочисленного массива
+    if (str == "int") {
+        int mas[N]; // Объявляем целочисленный массив размером N
+        for (int i = 0; i < N; i++) {
+            std::cin >> mas[i]; // Читаем элементы массива из стандартного ввода
         }
-        int *m = mas;
-        int n;
-        std::cin>>n;
-        get(n, m);
-    }
-    //поиск в массиве float
-    else if (str == "float")
-    {   
-        float mas[N];
-        for (int i = 0; i<N;i++)
-        {
-            std::cin>>mas[i];
-        }
-        float *m = mas;
-        float n;
-        std::cin>>n;
-        get(n, m);
+        int *m = mas; // Создаем указатель на массив
+        int n; // Объявляем переменную для хранения искомого значения
+        std::cin >> n; // Читаем искомое значение из стандартного ввода
+        get(n, m); // Вызываем функцию поиска для целочисленного массива
     }
 
-    else if (str == "char")
-    {   
-        char mas[N];
-        for (int i = 0; i<N;i++)
-        {
-            std::cin>>mas[i];
+    // Обработка ввода и поиска для вещественного массива
+    else if (str == "float") {
+        float mas[N]; // Объявляем вещественный массив размером N
+        for (int i = 0; i < N; i++) {
+            std::cin >> mas[i]; // Читаем элементы массива из стандартного ввода
         }
-        char *m = mas;
-        char n;
-        std::cin>>n;
-        get (n, m);
+        float *m = mas; // Создаем указатель на массив
+        float n; // Объявляем переменную для хранения искомого значения
+        std::cin >> n; // Читаем искомое значение из стандартного ввода
+        get(n, m); // Вызываем функцию поиска для вещественного массива
     }
-    else
-    {
-        std::cout<<"Wrong input";
+
+    // Обработка ввода и поиска для символьного массива
+    else if (str == "char") {
+        char mas[N]; // Объявляем символьный массив размером N
+        for (int i = 0; i < N; i++) {
+            std::cin >> mas[i]; // Читаем элементы массива из стандартного ввода
+        }
+        char *m = mas; // Создаем указатель на массив
+        char n; // Объявляем переменную для хранения искомого значения
+        std::cin >> n; // Читаем искомое значение из стандартного ввода
+        get(n, m); // Вызываем функцию поиска для символьного массива
     }
-    
-    
+
+    // Обработка неверного ввода типа данных
+    else {
+        std::cout << "Wrong input"; // Выводим сообщение об ошибке если тип данных неверен
+    }
+
+    return 0;
+}
