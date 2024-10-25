@@ -1,38 +1,59 @@
+// Включаем стандартный заголовочный файл для ввода/вывода
 #include <iostream>
+// Включаем стандартный заголовочный файл для числовых операций, хотя он здесь не используется
 #include <numeric>
+
+// Используем namespace std для避免 повторного использования std::
 using namespace std;
 
+// Определение константы SIZE, которая представляет размер массива
 #define SIZE 100
+
+// Определение макроса DYNAMIC_MEMORY для выбора между статической и динамической памятью
 #define DYNAMIC_MEMORY
 
-void Filling_the_array(int* array, int length){
-  for(int i = 0; i<length; i++){
-    array[i] = i*i;
-  }
-  for(int i = 0; i<length; i++){
-  cout<<array[i]<<' ';  
-  }
+// Функция для заполнения массива квадратами индексов и вывода его на экран
+void Filling_the_array(int* array, int length) {
+    // Цикл для заполнения массива квадратами индексов
+    for (int i = 0; i < length; i++) {
+        array[i] = i * i; // Каждый элемент массива равен квадрату его индекса
+    }
 
+    // Цикл для вывода элементов массива на экран
+    for (int i = 0; i < length; i++) {
+        cout << array[i] << ' '; // Выводим каждый элемент массива
+    }
 }
 
-int main() 
-{
+int main() {
 #ifdef DYNAMIC_MEMORY
-  int* array = new int[SIZE];
-  int*& link_array_2 = array;
-  Filling_the_array(link_array_2, SIZE);
+    // Выделяем динамическую память для массива размером SIZE
+    int* array = new int[SIZE];
+    
+    // Создаем ссылку на динамически выделенный массив (не обязательно, но показывает использование ссылок)
+    int*& link_array_2 = array;
+    
+    // Вызываем функцию для заполнения и вывода массива
+    Filling_the_array(link_array_2, SIZE);
 
 #else
-  int array[SIZE];
-  int (&link_array_1)[SIZE] = array;
-  Filling_the_array(link_array_1, SIZE);
+    // Объявляем статический массив размером SIZE
+    int array[SIZE];
+    
+    // Создаем ссылку на статический массив (не обязательно, но показывает использование ссылок)
+    int (&link_array_1)[SIZE] = array;
+    
+    // Вызываем функцию для заполнения и вывода массива
+    Filling_the_array(link_array_1, SIZE);
 
 #endif
 
 #ifdef DYNAMIC_MEMORY
-  delete[] array;
+    // Освобождаем динамически выделенную память для массива
+    delete[] array;
 #else
-  return 0;
+    // Если не используется динамическая память, просто возвращаем 0 из main
+    return 0;
 #endif
 
 }
