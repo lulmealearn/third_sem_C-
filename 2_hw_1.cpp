@@ -1,47 +1,31 @@
 #include <iostream>
-#include <math.h>
-using namespace std;
+#include <cmath>
 
-int main() 
-{   
-    double the_square_root;
-    int value, remains, divider;
-    cin >> value;
+int main() {
+    int number;
+    std::cout << "Введите число: ";
+    std::cin >> number;
+
+    int divisor = 2; 
+    int largest_divisor = 1; 
+    bool is_prime = true; 
     
-    divider = 0;
-    remains = 0;
-
-    if (value == 1) 
-    {
-        cout << "1";
+    while (divisor <= sqrt(number)) {
+        if (number % divisor == 0) {
+            largest_divisor = number / divisor; 
+            is_prime = false; 
+        }
+        divisor++;
     }
 
-    if (value == 2) 
-    {
-        cout << "Простое число";
+
+    if (!is_prime) {
+        std::cout << "Наибольший делитель числа " << number << ": " << largest_divisor << std::endl;
+    }
+    
+    else {
+        std::cout << "Число " << number << " является простым." << std::endl;
     }
 
-    if (value > 2) 
-    {
-        the_square_root = sqrt(value);
-
-        for (int i = 2; i <= the_square_root; i++) 
-        {
-            remains = value % i;
-
-            if (remains == 0) 
-            {
-                divider = i;
-            }
-        }
-
-        if (divider == 0) 
-        {
-            cout << "Простое число\n";
-        } 
-        else 
-        {
-            cout << divider;
-        }
-    } 
+    return 0;
 }
