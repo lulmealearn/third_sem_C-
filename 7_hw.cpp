@@ -1,11 +1,19 @@
 #include <iostream>
 #include <string>
 
+// Шаблонные функции
 template <typename T>
-T SUM(T& a, T& b) {
+T SUM(const T& a, const T& b) {
     return a + b;
 }
 
+
+template <typename T>
+int SIZE(T& a) {
+    return sizeof(a) / sizeof(*a);
+}
+
+// Базовый класс целей
 class Target {
 public:
     int health;
@@ -16,33 +24,26 @@ public:
     int FreeBuff = 0;
 
     virtual void inf() = 0;
-    virtual ~Target() {
-        delete[] debuffs;
-        delete[] buffs;
-    }
 };
 
+// Базовый класс заклинаний
 class Spell {
 protected:
     std::string name;
-    int damage;
-    int protect;
-    int heal;
-    int level;
-
-    virtual void ability(Target*) = 0;
 
 public:
-    void inf() {
+    virtual void ability(Target*) = 0;
+
+    virtual void inf() {
         std::cout << "Spell: " << name << '\n';
     }
-    virtual ~Spell() = default;
 };
 
-
+// Наследники заклинаний
 class Attack : public Spell {
 public:
     Attack() { name = "Attack"; }
+
     void ability(Target* t) override {
         t->debuffs[t->FreeDebuff++] = "burning";
         t->health -= 18;
@@ -52,28 +53,22 @@ public:
 class Protect : public Spell {
 public:
     Protect() { name = "Protect"; }
+
     void ability(Target* t) override {
         t->buffs[t->FreeBuff++] = "protected";
-    }
-};
-
-
-class Household : public Spell {
-public:
-    Household() { name = "Household"; }
-    void ability(Target* t) override {
-        std::cout << "This is not a combat spell.\n";
     }
 };
 
 class Unforgivable : public Spell {
 public:
     Unforgivable() { name = "Unforgivable"; }
+
     void ability(Target* t) override {
-        std::cout << "Better not use this spell.\n";
+        std::cout << "Better not use it.\n";
     }
 };
 
+// Элементы стихий
 class Elements {
 protected:
     int atack = 0;
@@ -82,12 +77,17 @@ protected:
 
 public:
     virtual void effect(Target*, int) = 0;
-    virtual ~Elements() = default;
+
+    int getAttack() const { return atack; }
+    int getProtect() const { return protect; }
+    std::string getName() const { return name; }
 };
 
+// Элементы: Огонь, Вода, Земля
 class Fire : public Elements {
 public:
     Fire() { atack = 10; name = "Fire"; }
+
     void effect(Target* t, int) override {
         t->debuffs[t->FreeDebuff++] = "burning";
     }
@@ -96,33 +96,30 @@ public:
 class Water : public Elements {
 public:
     Water() { atack = 5; name = "Water"; }
+
     void effect(Target* t, int) override {
-        t->debuffs[t->FreeDebuff++] = "washed";
+        t->debuffs[t->FreeDebuff++] = "wash";
     }
 };
 
 class Earth : public Elements {
 public:
     Earth() { protect = 8; name = "Earth"; }
+
     void effect(Target* t, int) override {
-        t->buffs[t->FreeBuff++] = "stone shield";
+        t->buffs[t->FreeBuff++] = "stone";
     }
 };
 
+// Природные заклинания
 class NatureSpell {
 private:
     Elements** elem;
     int N;
+    int level;
 
 public:
-    int level;
-    NatureSpell(Elements** el, int n) : elem(el), N(n), level((n / 3) + 1) {}
-    ~NatureSpell() {
-        for (int i = 0; i < N; ++i) {
-            delete elem[i];
-        }
-        delete[] elem;
-    }
+    NatureSpell(Elements** el, int n) : elem(el), N(n), level(n / 3 + 1) {}
 
     void effect(Target* t) {
         int total_damage = 0;
@@ -130,126 +127,102 @@ public:
 
         for (int i = 0; i < N; ++i) {
             elem[i]->effect(t, i);
-            total_damage = SUM(total_damage, elem[i]->atack);
-            total_shield = SUM(total_shield, elem[i]->protect);
+            total_damage = SUM(total_damage, elem[i]->getAttack());
+            total_shield = SUM(total_shield, elem[i]->getProtect());
         }
 
         if (total_damage > t->shield) {
-            total_damage -= t->shield;
+            t->health -= (total_damage - t->shield);
             t->shield = 0;
-            t->health -= total_damage;
         } else {
             t->shield -= total_damage;
         }
-
         t->shield += total_shield;
     }
 
-    void inf() {
-        std::cout << "Nature spell (level " << level << "): ";
+    void inf() const {
+        std::cout << "Nature Spell: ";
         for (int i = 0; i < N; ++i) {
-            std::cout << elem[i]->name << " ";
+            std::cout << elem[i]->getName() << " ";
         }
-        std::cout << '\n';
+        std::cout << "(Level " << level << ")\n";
+    }
+
+    int getLevel() const {
+        return level;
     }
 };
 
-class Book {
-public:
-    std::string name;
-    int pages;
-    Spell** Harry_spells;
-    NatureSpell** Nature_spells;
-    int Nat_Sp;
-    int Har_Sp;
 
-    Book(std::string n, int p, NatureSpell** ns, int n_ns, Spell** sp, int s)
-        : name(n), pages(p), Nature_spells(ns), Nat_Sp(n_ns), Harry_spells(sp), Har_Sp(s) {}
-
-    void inf() {
-        std::cout << "Book: " << name << "\nNature spells:\n";
-        for (int i = 0; i < Nat_Sp; ++i) {
-            Nature_spells[i]->inf();
-        }
-        std::cout << "Harry Potter spells:\n";
-        for (int i = 0; i < Har_Sp; ++i) {
-            Harry_spells[i]->inf();
-        }
-    }
-};
-
+// Волшебник
 class Wizard : public Target {
 public:
     std::string name;
     int level;
 
-    Wizard(std::string n, int l, int h, int s) : name(n), level(l), health(h), shield(s) {}
-
-    void inf() override {
-        std::cout << "Wizard: " << name << "\nHealth: " << health << ", Shield: " << shield << "\n";
+    Wizard(std::string n, int l, int h, int s) : name(n), level(l) {
+        health = h;
+        shield = s;
     }
 
-    void use(Book* book, int spell_index, Target* t) {
-        if (book->Nature_spells[spell_index]->level <= level) {
-            book->Nature_spells[spell_index]->effect(t);
+    void inf() override {
+        std::cout << "Wizard: " << name << '\n';
+        std::cout << "Health: " << health << ", Shield: " << shield << '\n';
+    }
+
+    void use(NatureSpell* spell, Target* target) {
+        if (spell->getLevel() <= level) {
+            spell->effect(target);
         } else {
-            throw std::runtime_error("Level too low to use this spell!");
+            throw std::runtime_error("Level too low!");
         }
     }
 };
 
+// Главная функция
 int main() {
-    try {
-        std::cout << "Enter number of Nature spells: ";
-        int N_NS;
-        std::cin >> N_NS;
+    std::cout << "How many Nature spells do you know?\n";
+    int N_NS;
+    std::cin >> N_NS;
 
-        NatureSpell* nature_spells[N_NS];
-        for (int i = 0; i < N_NS; ++i) {
-            std::cout << "Enter number of elements for spell " << (i + 1) << ": ";
-            int N;
-            std::cin >> N;
+    NatureSpell* spells[N_NS];
+    for (int i = 0; i < N_NS; ++i) {
+        std::cout << "How many elements in spell?\n";
+        int N;
+        std::cin >> N;
 
-            Elements** elements = new Elements*[N];
-            for (int j = 0; j < N; ++j) {
-                std::cout << "Enter element type (f=fire, w=water, e=earth): ";
-                char type;
-                std::cin >> type;
+        Elements** elements = new Elements*[N];
+        for (int j = 0; j < N; ++j) {
+            std::cout << "Enter element (fire, water, earth): ";
+            std::string elem;
+            std::cin >> elem;
 
-                if (type == 'f') {
-                    elements[j] = new Fire();
-                } else if (type == 'w') {
-                    elements[j] = new Water();
-                } else if (type == 'e') {
-                    elements[j] = new Earth();
-                } else {
-                    std::cout << "Invalid input. Try again.\n";
-                    --j;
-                }
+            if (elem == "fire") {
+                elements[j] = new Fire();
+            } else if (elem == "water") {
+                elements[j] = new Water();
+            } else if (elem == "earth") {
+                elements[j] = new Earth();
+            } else {
+                std::cerr << "Invalid element. Try again.\n";
+                --j;
             }
-
-            nature_spells[i] = new NatureSpell(elements, N);
         }
-
-        Spell* harry_spells[3] = {new Attack(), new Protect(), new Unforgivable()};
-
-        Book spell_book("Grimoire", 100, nature_spells, N_NS, harry_spells, 3);
-        spell_book.inf();
-
-        Wizard harry("Harry", 3, 100, 50);
-        Wizard enemy("Enemy", 1, 80, 20);
-
-        std::cout << "Choose a Nature spell (1-" << N_NS << "): ";
-        int spell_choice;
-        std::cin >> spell_choice;
-
-        harry.use(&spell_book, spell_choice - 1, &enemy);
-
-        enemy.inf();
-
-    } catch (std::exception& e) {
-        std::cerr << "Error: " << e.what() << '\n';
+        spells[i] = new NatureSpell(elements, N);
     }
+
+    Wizard harry("Harry", 3, 100, 50);
+    Wizard enemy("Enemy", 2, 80, 30);
+
+    try {
+        spells[0]->inf();
+        harry.use(spells[0], &enemy);
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
+    }
+
+    harry.inf();
+    enemy.inf();
 
     return 0;
 }
