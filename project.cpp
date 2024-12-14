@@ -211,7 +211,7 @@ public:
 
     void inf() override {
         cout << "Маг: " << name << "\n" << "Здоровье: " << health << "\n" << "Щит: " << shield << "\n";
-        cout << "Плюшки: ";
+        cout << "Преимущества: ";
         for (const auto& buff : gain) {
             cout << buff << " ";
         }
@@ -345,14 +345,14 @@ protected:
 public:
     virtual void use(Aang*) = 0;  // использование способности
     virtual void inf() const {
-        cout << "Суперспособности: " << name << " Урон: " << damage << "\n";
+        cout << "Ульта: " << name << " Урон: " << damage << "\n";
     }
 };
 
 class Super_strength : public Superpowers {
 public:
     Super_strength() {
-        name = "Суперсила";
+        name = "Ульта";
         damage = 15;
     }
     void use(Aang* monster) override {
