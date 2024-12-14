@@ -22,6 +22,7 @@ public:
     int resistance = 0;  // сопротивление
 
     virtual void inf() = 0;  // функция для вывода информации
+    virtual void use(Aang* target, string type, class Book* book) = 0;  // виртуальная функция для применения заклинания
 };
 
 // Иерархия классов заклинаний
@@ -222,8 +223,8 @@ public:
         cout << "\n";
     }
 
-    void use(Aang* a, string i, Book* book) {
-        book->use(a, i);
+    void use(Aang* target, string type, Book* book) override {
+        book->use(target, type);
     }
 };
 
@@ -380,18 +381,48 @@ public:
         sup->inf();
     }
 
-    void use(Aang* other, string type, Book* book) {
+    void use(Aang* other, string type, Book* book) override {
         book->use(other, type);
     }
 };
 
-// Главная функция для тестирования
+// Функция для симуляции сражения
+void battle(Aang* fighter1, Aang* fighter2, Book* book) {
+    while (fighter1->health > 0 && fighter2->health > 0) {
+        // Печатаем текущие состояния персонажей
+        cout << "\nСостояние участников боя:\n";
+        fighter1->inf();
+        fighter2->inf();
+
+        // Персонажи поочередно атакуют друг друга
+        cout << "\n" << fighter1->health << " HP против " << fighter2->health << " HP\n";
+        
+        // Маг атакует монстра
+        fighter1->use(fighter2, "Ns", book);
+        if (fighter2->health <= 0) {
+            cout << fighter1->health << " победил!\n";
+            break;
+        }
+
+        // Монстр атакует мага
+        fighter2->use(fighter1, "Ns", book);
+        if (fighter1->health <= 0) {
+            cout << fighter2->health << " победил!\n";
+            break;
+        }
+    }
+}
+
 int main() {
     shared_ptr<Wizard> wizard = make_shared<Wizard>("Магистр", 100, 50);
     shared_ptr<Monster> monster = make_shared<Monster>("Дракон", 80, 20, new Super_strength());
     shared_ptr<Book> book = make_shared<Book>("Книга Заклинаний");
     shared_ptr<NatureSpell> natureSpell = make_shared<NatureSpell>(vector<shared_ptr<Element>>{make_shared<Fire>(), make_shared<Air>()});
-    book->addNatureSpell(natureSpell);
+    
+    book->addNatureSpell(natureSpell);  // Добавляем заклинания природы
+
+    // Симуляция боя
+    battle(wizard.get(), monster.get(), book.get());  // Начало сражения между магом и монстром
+
     return 0;
 }
-
